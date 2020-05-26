@@ -1,0 +1,91 @@
+
+import Vue from 'vue'
+import App from './App'
+
+//Vue.use(plugin)
+
+var curvue=new Vue({
+  el: '#app',
+  router,
+  store,
+  components: { App },
+  template: '<App/>'
+})
+console.log(curvue);
+
+1、实例属性
+组件树访问
+$parent -----> 用来访问当前组件实例的父实例；
+$root -----> 用来访问当前组件树的根实例，如果当前组件没有父实例，则$root表示当前组件实例本身；
+$children -----> 用来访问当前组件实例的 直接 子组件实例；
+$refs -----> 用来访问使用了v-ref指令的子组件；
+DOM访问
+$el -----> 用来访问挂载当前组件实例的DOM元素；
+$els -----> 用来访问使用了v-el指令的DOM元素（已经被废除）；
+数据访问
+$data -----> 用来访问组件实例观察的数据对象，该对象引用组件实例化时选项中的data属性；
+$options -----> 用来访问组件实例化时的初始化选项对象；
+
+
+
+2、实例方法
+
+方法：
+vm.$mount()
+#手动挂载
+//vm.$mount('#app');
+
+vm.$destroy()
+#销毁实例
+
+vm.$nextTick(callback)
+#将回调延迟到下次 DOM 更新循环之后执行。在修改数据之后立即使用它，然后等待 DOM 更新,直到DOM结构加载完成；。
+
+vm.$set(object,key,value)
+#添加属性值
+Vue.set(this.user,'age',1)
+
+
+vm.$delete(object,key)
+#删除属性值
+Vue.delete(this.user,'age')
+
+vm.$watch(data,callback[,options])
+#更新属性值
+
+vm.$watch(data,callback[,options])
+#监测数值变化
+
+
+内部插入
+$appendTo()可以将el指向的DOM元素或片段插入到目标元素中；
+第一个参数：选择器字符串或者DOM元素
+第二个参数：callback回调函数，成功插入到目标元素后被触发（并且如果el应用了过渡效果，则回调在过渡完成后触发）
+
+同级插入
+$before()可以将el指向的DOM元素或片段插入到目标元素之前；
+   第一个参数：选择器字符串或者DOM元素
+   第二个参数：callback回调函数，成功插入到目标元素后被触发（并且如果el应用了过渡效果，则回调在过渡完成后触发）
+
+$after()可以将el指向的DOM元素或片段插入到目标元素之后；
+   第一个参数：选择器字符串或者DOM元素
+   第二个参数：callback回调函数，成功插入到目标元素后被触发（并且如果el应用了过渡效果，则回调在过渡完成后触发）
+
+删除
+$remove()可以将el指向的DOM元素或片段从DOM中删除；
+只有一个callback作为参数，在el元素从DOM中删除完成后触发（并且如果el应用了过渡效果，则回调在过渡完成后触发）
+$remove删除数据结构 splice根据索引值删除，批量删除都要采用倒序删除，获取到索引值非要使用$remove的方法是this.data.$remove(this.data[index])，还是删除数据结构
+只有一个callback作为参数，回调函数的this会自动绑定到调用它的Vue实例上；
+
+3、实例Event方法的使用
+
+监听
+$on(event（事件名称），callback)监听实例的自定义事件，回调会在触发“触发事件”后进行触发
+$once(event（事件名称），callback)监听实例的自定义事件，但只执行一次，回调会在触发“触发事件”后进行触发
+触发
+$emit（event（事件名称），args（传递给监听函数的参数））用来触发事件；
+$dispatch（event（事件名称），args（传递给监听函数的参数））用来派发事件，即先在当前实例触发，然后沿着父链一层一层向上，如果对应的监听函数返回false后停止；
+$broadcast（event（事件名称），args（传递给监听函数的参数））用来广播事件，即遍历当前实例的$children，如果对应的监听函数返回false后就停止；
+删除
+$off（event（事件名称），callback）用来删除事件监听器；（如果没有参数，删除所有的事件监听器；如果只提供一个事件名称参数，则删除这一个事件监听器；如果提供事件名与回调，则删除对应的回调函数）
+

@@ -1,0 +1,269 @@
+export default {
+  name: ’string’
+  components: {}, //{组件1，组件2}，所导入组件名
+  props: {} || [], //  组件父组件传递值，推荐用对象形式，例如:
+  props: {
+    yearlimit: {
+      type: Array, //注意若类型为Object||Array,default的值必须用工厂函数返回
+      default: function() {
+        return [];
+        //[min,max]
+      }
+    },
+  },
+  data() { returen { dataobj: { key: value } } }, //组件数据源
+  
+  beforeCreate() {
+    //alert("创建vue实例前")
+  },
+  created() {
+    //alert("实例创建完成")
+  },
+  beforeMount() {
+    //alert("虚拟dom开始挂载到实际dom树中")
+  },
+  mounted() {
+    //alert("虚拟dom已经挂载到实际dom树中,页面加载完成");
+  },
+  beforeUpdate() {
+    //alert("更新前")
+  },
+  updated() {
+    //alert("更新完成")
+  },
+  beforeDestroy() {
+    //alert("销毁前")
+  },                                                                                                                                                                                                                                                                                                                                                                                                                                                
+  destroyed() {
+    //alert("销毁完成")
+  },
+  //以上8个为vue的一个生命周期
+
+  activated() {
+    //在vue对象存活的情况下，进入当前存在activated()函数的页面时，一进入页面就触发；可用于初始化页面数据等
+  },
+  beforeRouteEnter(to, from, next) {
+    // 进入路由前
+    console.log(this, 'beforeRouteUpdate'); //undefined
+    next(vm => {
+      //因为当钩子执行前，组件实例还没被创建
+      // vm 就是当前组件的实例相当于上面的 this，所以在 next 方法里你就可以把 vm 当 this 来用了。
+      console.log(vm); //当前组件的实例
+    })
+  },
+  beforeRouteUpdate(to, from, next) {
+    //在当前路由改变，但是该组件被复用时调用
+    //对于一个带有动态参数的路径 /good/:id，在 /good/1 和 /good/2 之间跳转的时候，
+    // 由于会渲染同样的good组件，因此组件实例会被复用。而这个钩子就会在这个情况下被调用。
+    // 可以访问组件实例 `this`
+    console.log(this, 'beforeRouteUpdate'); //当前组件实例
+    next();
+  },
+  beforeRouteLeave(to, from, next) {
+    // 导航离开该组件的对应路由时调用
+    // 可以访问组件实例 `this`
+    console.log(this, 'beforeRouteLeave'); //当前组件实例
+    next();
+  },
+  computed: { //计算属性 
+    key() { //这里的key相当于date里面的数据源，不能在data里面重复定义
+      return a newValue by calculating and refining known properties in data
+      //return a value(必须)
+    }
+  },
+  filters: { //过滤器，对一些绑定值进行过滤筛选，比如只允许输入数字 v-model=”value| filterDigital”
+    filterName(value) {
+      return a newValue by filter the value
+    }
+  },
+  methods: {
+    methodName(arg…) {
+      //要执行的操作
+    },
+  },
+  watch: {
+    dataobj: {
+      handler() {
+        //要执行的操作
+      },
+      deep: true, //是否深度监听，意为对象dataobj内部任何属性发生变化则全局重新渲染
+      immediate: true // 代表在wacth里声明了dataobj这个方法之后立即先去执行handler方法
+    }
+  }
+}
+
+
+
+
+Vue所有的生命周期钩子自动绑定在this上下文到实例中，因此你可以访问数据，对属性和方法进行运算。这意味着你不能使用箭头函数来定义一个生命周期方法。这是因为箭头函数绑定了父上下文，因此this与你期待的Vue实例不同。
+1、beforeCreate
+　　在实例初始化之后，数据观测和event/watcher时间配置之前被调用。
+2、created
+　　实例已经创建完成之后被调用。在这一步，实例已经完成以下的配置：数据观测，属性和方法的运算，watch/event事件回调。然而，挂载阶段还没开始，$el属性目前不可见。
+3、beforeMount
+　　在挂载开始之前被调用：相关的render函数首次被调用。
+　　该钩子在服务器端渲染期间不被调用。  
+4、mounted
+　　el被新创建的vm.$el替换，并挂在到实例上去之后调用该钩子函数。如果root实例挂载了一个文档内元素，当mounted被调用时vm.$el也在文档内。
+　　该钩子在服务端渲染期间不被调用。
+5、beforeUpdate
+　　数据更新时调用，发生在虚拟DOM重新渲染和打补丁之前。
+　　你可以在这个钩子中进一步第更改状态，这不会触发附加的重渲染过程。
+　　该钩子在服务端渲染期间不被调用。
+6、updated
+　　由于数据更改导致的虚拟DOM重新渲染和打补丁，在这之后会调用该钩子。
+　　当这个钩子被调用时，组件DOM已经更新，所以你现在可以执行依赖于DOM的操作。然而在大多数情况下，你应该避免在此期间更改状态，因为这可能会导致更新无限循环。
+　　该钩子在服务端渲染期间不被调用。
+7、activated
+　　keep-alive组件激活时调用。
+　　该钩子在服务器端渲染期间不被调用。
+8、deactivated
+　　  
+9、beforeDestroy 【类似于React生命周期的componentWillUnmount】
+　　实例销毁之间调用。在这一步，实例仍然完全可用。
+　　该钩子在服务端渲染期间不被调用。
+10、destroyed
+　　Vue实例销毁后调用。调用后，Vue实例指示的所有东西都会解绑定，所有的事件监听器会被移除，所有的子实例也会被销毁。
+　　该钩子在服务端渲染不会被调用。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+这里放置全局组件
+
+全局组件为了方便公用，及以后调用，全局组件中每一个组件文件夹中应包含组件名及所用素材资源文件，若仅为样式不需要img等资源则写为一个文件即可，另外每一个组件附上调用说明
+
+关于全局组件和路由皆以如下懒加载的方式调用
+
+路由和组件的常用两种懒加载方式：
+1、vue异步组件实现路由懒加载
+　　component：resolve=>(['需要加载的路由的地址'，resolve])
+2、es提出的import(推荐使用这种方式)
+ 　const HelloWorld = ()=>import('需要加载的模块地址')
+npm run build后会新增路由数量与之加载相匹配的.js文件，在切到相应路由或组件时动态加载这个文件。
+
+// 这两条路由被打包在相同的块中，访问任一路由都会延迟加载该路由组件
+const OtherMassivePage = r => require.ensure([], () => r(require('./routes/OtherMassivePage.vue')), 'big-pages')
+const WeightLossPage = r => require.ensure([], () => r(require('./routes/WeightLossPage.vue')), 'big-pages')
+
+vue render函数说明
+  render: (h, params) => {
+    var vm = this;
+    return h('Input', {
+      attrs: {
+        value: params.row.age,
+        readonly: params.row.status == 2 ? false : true,
+        class: params.row.status == 2 ? "border ivu-input" : "noborder ivu-input",
+      },
+      on: {
+        input(val) {
+          这里用的是iview Input组件，input事件的返回值是改变后的值，若要调用event,需直接调用:var event=window.event;
+          若直接用原生的input标签，input事件的返回值是event，改编后的值用event.target.value;
+          //值改变时 
+          //将渲染后的值重新赋值给单元格值;
+          params.row.age = val;
+          vm.data8[params.index] = params.row;
+        }
+      }
+    })
+  }
+  上面是渲染表格的某一列的一个例子，当需要分情况渲染不同元素时，可以如下格式去写：
+    render: (h, params) => {
+      return h('div', [
+        h('Button', {
+          style: {
+            display: params.row.status == 0 ? "inline-block" : "none",
+            marginRight: '5px'
+          },
+          on: {
+            click: () => {
+              this.edit(params.index)
+            }
+          }
+        }, 'edit'),
+        h('Button', {
+          style: {
+            display: params.row.status == 2 ? "inline-block" : "none",
+            marginRight: '5px'
+          },
+          on: {
+            click: () => {
+              this.endedit(params.index)
+            }
+          }
+        }, 'endedit')
+      ]);
+    }
+  }
+
+  h相当于createElement，为一个回调函数，h的第二个参数为一个对象，也可以为一个数组，每个值又为一个对象，当然也可以嵌套多层标签，支持的所有属性如下（以下所有的属性值都支持表达式赋值）
+  {
+  // 和`v-bind:class`一样的 API
+  'class': {
+    foo: true,
+    bar: false
+  },
+  // 和`v-bind:style`一样的 API
+  style: {
+    color: 'red',
+    fontSize: '14px'
+  },
+  // 正常的 HTML 特性
+  attrs: {
+    id: 'foo'
+  },
+  // 组件 props
+  props: {
+    myProp: 'bar'
+  },
+  // DOM 属性
+  domProps: {
+    innerHTML: 'baz'
+  },
+  // 事件监听器基于 `on`
+  // 所以不再支持如 `v-on:keyup.enter` 修饰器
+  // 需要手动匹配 keyCode。
+  on: {
+    click: this.clickHandler
+  },
+  // 仅对于组件，用于监听原生事件，而不是组件内部使用 `vm.$emit` 触发的事件。
+  nativeOn: {
+    click: this.nativeClickHandler
+  },
+  // 自定义指令。注意事项：不能对绑定的旧值设值
+  // Vue 会为您持续追踪
+  directives: [
+    {
+      name: 'my-custom-directive',
+      value: '2',
+      expression: '1 + 1',
+      arg: 'foo',
+      modifiers: {
+        bar: true
+      }
+    }
+  ],
+  // Scoped slots in the form of
+  // { name: props => VNode | Array<VNode> }
+  scopedSlots: {
+    default: props => createElement('span', props.text)
+  },
+  // 如果组件是其他组件的子组件，需为插槽指定名称
+  slot: 'name-of-slot',
+  // 其他特殊顶层属性
+  key: 'myKey',
+  ref: 'myRef'
+}
+

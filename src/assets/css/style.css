@@ -1,0 +1,60 @@
+#app .deving,
+#app h2 {
+  /*background: rgba(67, 99, 86, 0.15);*/
+  background: rgb(227, 227, 236);
+}
+
+#app h2 {
+  text-align: center;
+  padding: 50px;
+  font-size: 30px;
+  color: #815f88;
+  background: transparent;
+}
+
+#app .deving-con {
+  text-align: center;
+}
+
+#app .deving {
+  display: inline-block;
+  padding: 50px;
+  margin: 0 auto;
+  max-width: 1000px;
+  text-align: center;
+  min-width: calc(100% - 200px);
+
+}
+
+#app .deving h1 {
+  background: transparent;
+  font-size: 30px;
+  color: #6a668b;
+}
+
+#app .deving h2 {
+  margin: 50px 0 0 0;
+  font-size: 30px;
+  color: #c5e5d5;
+  background: #606d72;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,369 @@
+使用Vue搭建项目的时候，为了避免一个页面过大，将本应该一个页面显示的内容分成多个页面，并使用同级视图展示。
+
+路由说明
+<router-link to='指向要链接的组件'>路由说明文字</router-link> 是一个用来让用户在 vue-router 应用的不同路径间跳转的标签。该指令to属性 接收一个 JavaScript 表达式，并会在用户点击元素时用该表达式的值去调用 router.Go。
+router-link不支持target="_blank"，它是一个开发单页应用的组件，所以，想要打开新窗口还是要使用a标签，如果要引入路由相关信息，一定要引入vue-router插件。
+
+具体来讲，router-link有三种用法：
+<!-- 字面量路径 -->
+<router-link to='指向要链接的地址'>name</router-link>
+<!-- 地址路由，效果同上 -->
+<router-link to="{ path: 'pathname', params: {id: '01'} }>name</router-link>
+<!-- 具名路径也叫命名路由 -->
+<router-link to="{ name: 'detail', params: {id: '01'} }">name</router-link>
+v-link 会自动设置 <a> 的 href 属性，你无需使用href来处理浏览器的调整，原因如下：
+它在 HTML5 history 模式和 hash 模式下的工作方式相同，所以如果你决定改变模式，或者 IE9 浏览器退化为 hash 模式时，都不需要做任何改变。
+在 HTML5 history 模式下使用 root 选项时，不需要在 router-link 的 URL 中包含 root 路径。
+
+除过 <router-link to='指向要链接的组件'>name</router-link>，直接跳转外，路由也可使用编程式路由进行跳转：
+具体如下
+$router.push(“name”);
+$router.push({path:”name”});
+$router.push({path:”name”?a=123}); //传参
+$router.push({path:”name”，query:{a:123}});
+$router.go(*);  go(-1)返回到上一个路由，go(1)，若有返回记录则前进到下一个路由
+参数查询：$router.query.[参数名]
+
+路由对象：
+在使用了 vue-router 的应用中，路由对象会被注入每个组件中，赋值为 this.$route ，并且当路由切换时，路由对象会被更新。
+$route:{
+  path:"str",//绝对路径
+  params:{},//包含路由中的动态片段和全匹配片段的键值对
+  query:{}, //包含路由中查询参数的键值对。例如，对于 /home/news/detail/.  01?favorite=yes ，会得到$route.query.favorite == 'yes' 。
+  hash:'',
+  router:"",//路由规则所属的路由器（以及其所属的组件）。
+  fullPath:'str',
+  matched:[],//数组，包含当前匹配的路径中所包含的所有片段所对应的配置参数对象。
+  name:"name",//当前路径的名字，如果没有使用具名路径，则名字为空。
+  redirectedFrom:"name",//当路由中设置了重定向会显示此参数，路由重定向来源
+}
+当路由地址中使用一个通配符*时，$route.params 内会自动添加一个名为 pathMatch 参数,同一个路径可以匹配多个路由，此时，匹配的优先级就按照路由的定义顺序：谁先定义的，谁的优先级就最高。
+
+在页面上添加以下代码，可以显示这些路由对象的属性：
+<div>
+    <p>当前路径：{{$route.path}}</p>
+    <p>当前参数：{{$route.params | json}}</p>
+    <p>路由名称：{{$route.name}}</p>
+    <p>路由查询参数：{{$route.query | json}}</p>
+    <p>路由匹配项：{{$route.matched | json}}</p>
+</div>
+
+使用<router-view></router-view>标签，它用于渲染匹配的组件，router-view放置路径位置与routers 对应一致，
+
+扩展：指定路由跳转放置插槽，可以使用name属性指定，这里的name值一定是组件name，即路由配置中component的值，
+同一路由渲染多个组件亦可路由中配置component:{default:组件1，hello:组件2,text:组件3}
+   <router-view></router-view> //将渲染组件1 
+   <router-view  name="Hello"></router-view> //将渲染组件2   
+   <router-view  name="Text"></router-view>   //将渲染组件3
+*/
+const router = new VueRouter({
+  routes: [
+    {
+      path: '/',
+      name:"Hello",
+      components: {
+        default: componentsDefault,
+        Hello: componentsHello,
+        Text: componentsText
+      },
+      redirect: '/Hello',  // { name: 'Hello' } || to => {// 方法接收 目标路由 作为参数// return 重定向的 字符串路径/路径对}
+      alias: '/Hello',  / 的别名是 /Hello，意味着，当用户访问 /Hello 时，URL 会保持为 /Hello，但是路由匹配则为 /，就像用户访问 / 一样。
+      props: { default: true, Hello: false,Text:false },//参数解耦
+      beforeEnter: (to, from, next) => {  //专属守卫
+        // ...
+      }
+      meta: {//路由申明
+	      auth: true,
+	      keepAlive: true
+	  },
+      children: []
+      }
+    }
+  ]
+})
+
+
+
+
+router 方法
+router.push(location, onComplete?, onAbort?)
+router.replace(location, onComplete?, onAbort?)
+router.go(n)
+router.back()
+router.forward()
+router.addRoutes(routes: Array<RouteConfig>)      动态添加更多的路由规则。参数必须是一个符合 routes 选项要求的数组。
+router.onReady(callback, [errorCallback]) 该方法把一个回调排队，在路由完成初始导航时调用，这意味着它可以解析所有的异步进入钩子和路由初始化相关联的异步组件
+router.onError(callback)注册一个回调，该回调会在路由导航过程中出错时被调用。注意被调用的错误必须是下列情形中的一种：错误在一个路由守卫函数中被同步抛出；错误在一个路由守卫函数中通过调用 next(err) 的方式异步捕获并处理；渲染一个路由的过程中，需要尝试解析一个异步组件时发生错误。
+
+
+
+const router = new VueRouter({
+  routes: [...],
+  scrollBehavior (to, from, savedPosition) {
+    // `to` 和 `from` 都是路由对象
+    // return 期望滚动到哪个的位置
+      if (savedPosition) {
+         return savedPosition
+	  } else {
+	    return { x: 0, y: 0 }
+	  }
+
+	  //异步滚动
+	  return new Promise((resolve, reject) => {
+	    setTimeout(() => {
+	      resolve({ x: 0, y: 0 })
+	    }, 500)
+	  })
+
+	  if (to.hash) {
+	    return {
+	      selector: to.hash
+	    }
+	  }
+   },
+
+})
+
+路由守卫
+router.beforeEach((to, from, next) => {
+  // `to` 和 `from` 都是路由对象
+  /* must call `next` */
+  next()
+  next(false)
+  next({ path: '/' })||next('/')
+  next(error)
+})
+
+router.beforeResolve((to, from, next) => {
+  /* must call `next` */
+})
+router.afterEach((to, from) => {})
+
+
+组件内部守卫
+  beforeRouteEnter(to, from, next) {
+    // 在渲染该组件的对应路由被 confirm 前调用
+    // 不！能！获取组件实例 `this`
+    // 因为当守卫执行前，组件实例还没被创建
+    next(vm => {
+      // 通过 `vm` 访问组件实例
+    })
+  },
+  beforeRouteUpdate(to, from, next) {
+    // 在当前路由改变，但是该组件被复用时调用
+    // 举例来说，对于一个带有动态参数的路径 /foo/:id，在 /foo/1 和 /foo/2 之间跳转的时候，
+    // 由于会渲染同样的 Foo 组件，因此组件实例会被复用。而这个钩子就会在这个情况下被调用。
+    // 可以访问组件实例 `this`
+    // just use `this`
+    next()
+  },
+  beforeRouteLeave(to, from, next) {
+    // 导航离开该组件的对应路由时调用
+    // 可以访问组件实例 `this`
+    const answer = window.confirm('Do you really want to leave? you have unsaved changes!')
+    if (answer) {
+      next()
+    } else {
+      next(false)
+    }
+  }
+
+
+
+动态过渡
+<!-- 使用动态的 transition name -->
+<transition :name="transitionName">
+  <router-view></router-view>
+</transition>
+
+
+
+
+完整的导航解析流程
+导航被触发。
+在失活的组件里调用离开守卫。
+调用全局的 beforeEach 守卫。
+在重用的组件里调用 beforeRouteUpdate 守卫 (2.2+)。
+在路由配置里调用 beforeEnter。
+解析异步路由组件。
+在被激活的组件里调用 beforeRouteEnter。
+调用全局的 beforeResolve 守卫 (2.5+)。
+导航被确认。
+调用全局的 afterEach 钩子。
+触发 DOM 更新。
+用创建好的实例调用 beforeRouteEnter 守卫中传给 next 的回调函数。
+
+
+
+生命周期钩子：必要的保持，不必要不要保持
+在被keep-alive包含的组件/路由中，会多出两个生命周期的钩子:activated 与 deactivated
+activated在组件第一次渲染时会被调用，之后在每次缓存组件被激活时调用
+deactivated：组件被停用(离开路由)时调用
+注意：使用了keep-alive就不会调用beforeDestroy(组件销毁前钩子)和destroyed(组件销毁)，因为组件没被销毁，被缓存起来了。
+keep-alive的生命周期
+activated： 页面第一次进入的时候，钩子触发的顺序是created->mounted->activated
+deactivated:  页面退出的时候会触发deactivated，当再次前进或者后退的时候只触发activated
+
+
+
+
+我不想把查询条件和查询结果被缓存，那么我可以这样写：
+mounted: function() {
+     this.loaddata(1)
+},
+activated: function () {
+     this.productclass.name=""//查询条件
+     this.loaddata(1) //查询结果的方法
+}
+新增属性：
+include 字符串或正则表达式，只有名称匹配的组件会被缓存
+exclude 字符串或正则表达式，任何名称匹配的组件都不会被缓存
+max 数字，最多可以缓存多少组件实例
+include和exclude支持三种方式来有条件的缓存路由：采用逗号分隔的字符串形式，正则形式，数组形式。
+正则和数组形式，必须采用v-bind形式来使用
+
+缓存组件的使用方式：
+    <!-- 逗号分隔字符串 -->
+    <keep-alive include="a,b"><component :is="view"></component></keep-alive>  
+    <!-- 正则表达式 (使用 v-bind`) -->
+    <keep-alive :include="/a|b/"><component :is="view"></component></keep-alive>  
+    <!-- 数组 (使用 `v-bind`) -->
+    <keep-alive :include="['a', 'b']"><component :is="view"></component></keep-alive>
+但更多场景中，我们会使用keep-alive来缓存路由：
+<keep-alive include='a'>
+    <router-view></router-view>
+</keep-alive>
+注：当组件被exclude匹配，该组件将不会被缓存，不会调用activated 和 deactivated。
+
+include和exclude的值一定是组件名（组件export default 里面的name）
+
+
+//以下是成对出现的
+<keep-alive >
+     <router-view v-if="$route.meta.keepAlive">
+         <!--这里是会被缓存的路由-->
+     </router-view>
+ </keep-alive>
+ <router-view v-if="!$route.meta.keepAlive">
+     <!--因为用的是v-if 所以下面还要创建一个未缓存的路由视图出口-->
+ </router-view>
+
+
+
+ //router配置
+ new Router({
+   routes: [
+     {
+       path: '/',
+       name: 'home',
+       component: Home,
+       meta: {
+         keepAlive: true // 需要被缓存
+       }
+     },
+     {
+       path: '/edit',
+       name: 'edit',
+       component: Edit,
+       meta: {
+         keepAlive: false // 不需要被缓存
+       }
+     }
+   ]
+ })
+
+
+路由生命周期执行顺序：
+
+main.js
+import Vue from 'vue';
+// 实例化Vue对象并挂载
+new Vue({
+    router
+}).$mount('#app');
+
+
+mport Vue from 'vue';
+import VueRouter from 'vue-router';
+// Vue中插件必须use注册
+Vue.use(VueRouter);
+ 
+// 路由配置项，此处是路由级钩子的定义
+const routes = [{
+        path: '/',
+        component: resolve => require(['./index.vue'], resolve),
+        keepAlive: true,
+    },
+    {
+        path: '/user/:userName',
+        keepAlive: true,
+        beforeEnter(to,from,next){
+            console.log('router beforeEnter');
+            next();
+        },
+        component: resolve => require(['./user.vue'], resolve),
+    }];
+ 
+// 实例化路由对象
+const router = new VueRouter({
+    routes
+});
+// 全局钩子
+router.beforeEach((to,from,next)=>{
+    console.log('global beforeEach')
+    next();
+});
+router.beforeResolve((to,from,next)=>{
+    console.log('global beforeResolve')
+    next();
+});
+router.afterEach((to,from,next)=>{
+    console.log('global afterEach')
+});
+
+user.vue
+<template>
+    <div>
+        <h1>{{ msg }}</h1>
+        <p>我是:{{userName}}</p>
+    </div>
+</template>
+ 
+<script>
+    export default {
+        name: 'user',
+        data () {
+            return {
+                msg: '这里是 User Page.',
+                userName: '叶落'
+            };
+        },
+        methods: {},
+        mounted () {
+            var me = this;
+            me.userName = me.$route.params.userName;
+            console.log('user mounted.');
+        },
+        beforeRouteEnter (to, from, next) {
+            console.log('component beforeRouteEnter');
+            next();
+        },
+        beforeRouteUpdate (to, from, next) {
+            console.log('component beforeRouteUpdate');
+            next();
+        },
+        beforeRouteLeave(to,from,next){
+            console.log('component beforeRouteLeave');
+            next();
+        }
+    };
+</script>
+
+执行时机
+由首页进入user页面：
+global beforeEach > router beforeEnter > component beforeRouteEnter > global beforeResolve > global afterEach > mounted
+由user回到首页：
+component beforeRouteLeave => global beforeEach => global beforeResolve => global afterEach
+排除beforeRouteUpdate，其余六个导航钩子的执行时机其实很好理解。大体按照leave、before、enter、resolve、after的顺序并全局优先的思路执行。beforeRouteUpdate的触发是在动态路由情形下，比如 path: '/user/:userName' 这条路由，当页面不变更只动态的改变参数userName时，beforeRouteUpdate便会触发。
+总结：使用vue组件拼凑成整个应用，每个页面是独立的，路由依靠链接跳转，会刷新页面。使用vue-router则可以不刷新页面加载对应组件，hash和history模式模拟路径变化，不刷新页面。
+
