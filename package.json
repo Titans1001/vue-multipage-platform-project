@@ -17,8 +17,8 @@
   },
   "dependencies": {
     "axios": "^0.21.2",
-    "echarts": "^4.2.1",
-    "echarts-gl": "^1.1.1",
+    "echarts": "^5.4.3",
+    "echarts-gl": "^2.0.9",
     "iview": "^3.5.0",
     "v-viewer": "^1.4.2",
     "vue": "^2.6.10",
