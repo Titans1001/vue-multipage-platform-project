@@ -16,7 +16,7 @@
     "deploy": "node build/autodeploy.js"
   },
   "dependencies": {
-    "axios": "^0.21.2",
+    "axios": "^1.6.0",
     "echarts": "^4.2.1",
     "echarts-gl": "^1.1.1",
     "iview": "^3.5.0",
